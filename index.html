@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+    <div id="buttonItems"> </div>
+    <div id="Images"> </div>
+    <script>
+
+        // Constructing a queryURL using the animal name
+        const queryURL = "https://api.giphy.com/v1/gifs/search?&api_key=7OHP8NfBNgbjOC2wjH9oUyAKyNDA51lH&q=";
+        const apiKey = "&limit=10&rating=G";
+
+        // // https://api.giphy.com/v1/gifs/search?api_key=lpUv4ymQePCo440lMn6v8l8gzLqar5Hn&
+        // q=Cat&limit=25&offset=0&rating=G&lang=en
+        let topics = ["Cat", "tiger", "Hamster", "Bird"];
+
+        $(document).ready(function () {
+
+            // Code for creating Buttons 
+            topics.forEach(function (element, index, array) {
+                console.log(element);
+                console.log(index);
+                console.log(array);
+                const buttonElement = $("<button>");
+                buttonElement.attr({ id: element, class: "ButtonItemsList" });
+                buttonElement.text(element);
+                $("#buttonItems").prepend(buttonElement);
+            });
+            $(".ButtonItemsList").click(function () {
+                $("#Images").empty();
+                $.ajax({
+                    url: queryURL + $(this).attr('id') + apiKey,
+                    method: 'GET'
+                }).then(function (resObj) {
+                    let resObjResult = resObj.data;
+                    for (let i = 0; i < resObjResult.length; i++) {
+                        $("#Images").prepend($("<div>").append($("<p>").text("Rating:" + resObjResult[i].rating), $("<img>").attr({
+                            src: resObjResult[i].images.fixed_height_still.url,
+                            class: "ImagesList"
+                        })));
+                    }
+
+                });
+
+            });
+
+         $(".ImagesList").on('click', function (event) {
+                console.log(event);
+                console.log($(this));
+            });
+        });
+
+
+
+
+    </script>
+
+
+</body>
+
+</html>
