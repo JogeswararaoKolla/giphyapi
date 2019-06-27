@@ -7,11 +7,33 @@
     <title>Document</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
 <body>
-
-    <div id="buttonItems"> </div>
-    <div id="Images"> </div>
+   
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="buttonItems"> </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div id="Images"> </div>
+            </div>
+            <div class="col-md-4">
+                <form>
+                    <div class="form-group">
+                        <label for="addGifs">Add Addtional GIFs</label>
+                        <input type="text" class="form-control" id="addGifs"
+                            placeholder="Add Additional GIFs">
+                    </div>
+                </form>
+                <button type="button" id="addGifsbtn" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+  
     <script>
 
         // Constructing a queryURL using the animal name
@@ -20,46 +42,91 @@
 
         // // https://api.giphy.com/v1/gifs/search?api_key=lpUv4ymQePCo440lMn6v8l8gzLqar5Hn&
         // q=Cat&limit=25&offset=0&rating=G&lang=en
-        let topics = ["Cat", "tiger", "Hamster", "Bird"];
+        let topicsLower = ["cat", "tiger", "hamster", "bird"];
 
-        $(document).ready(function () {
-
-            // Code for creating Buttons 
-            topics.forEach(function (element, index, array) {
-                console.log(element);
-                console.log(index);
-                console.log(array);
+        function createButtons(){
+              // Code for creating Buttons 
+              $("#buttonItems").empty();
+              topicsLower.forEach(function (element, index, array) {
                 const buttonElement = $("<button>");
                 buttonElement.attr({ id: element, class: "ButtonItemsList" });
                 buttonElement.text(element);
-                $("#buttonItems").prepend(buttonElement);
+                $("#buttonItems").append(buttonElement);
             });
-            $(".ButtonItemsList").click(function () {
+         }
+         
+        $(document).ready(function() {
+
+      
+           
+         createButtons();
+
+          $("#addGifsbtn").click(function(event){
+            event.preventDefault();
+// Onclick on addGifsbtn get the value from addGifs and push to Global Array
+//Check for input text string is not blank
+            if($("#addGifs").val().trim().length) {
+                let elementGif=$("#addGifs").val().trim();
+                elementGif=elementGif.toLowerCase();
+                if(topicsLower.indexOf(elementGif)!=-1)
+                   {
+                   alert("Duplicate button!!");
+                   console.log(elementGif);
+                   }
+                else {
+                topicsLower.push(elementGif);
+                console.log(topicsLower);
+               }
+            }
+            else {
+                alert("Input text Blank!!");
+            }
+              createButtons();
+              // Set Input text to blank after the button Creation
+              $("#addGifs").val("");
+          });
+
+    $(document).on('click','.ButtonItemsList',function (event) {
+               event.preventDefault();
                 $("#Images").empty();
                 $.ajax({
                     url: queryURL + $(this).attr('id') + apiKey,
                     method: 'GET'
                 }).then(function (resObj) {
+                    console.log(queryURL + $(this).attr('id') + apiKey);
+                    console.log(resObj);
                     let resObjResult = resObj.data;
                     for (let i = 0; i < resObjResult.length; i++) {
+                        console.log(resObjResult[i].images);
                         $("#Images").prepend($("<div>").append($("<p>").text("Rating:" + resObjResult[i].rating), $("<img>").attr({
                             src: resObjResult[i].images.fixed_height_still.url,
-                            class: "ImagesList"
+                            class: "ImagesList",
+                            height : '200px',
+                            width : '200px' ,
+                            "data-still" : resObjResult[i].images.fixed_height_still.url,
+                            "data-animate" : resObjResult[i].images.fixed_height.url,
+                            "data-state"  : "still"
                         })));
                     }
 
                 });
 
-            });
-
-         $(".ImagesList").on('click', function (event) {
+            });   
+    $(document).on('click',".ImagesList", function (event) {
+               event.preventDefault();
                 console.log(event);
-                console.log($(this));
+                console.log($(this).attr("data-state"));
+               if($(this).attr("data-state")=="still"){
+                $(this).attr('src',$(this).attr("data-animate"));
+                $(this).attr("data-state","animated");
+               }
+               else
+               {
+                $(this).attr('src',$(this).attr("data-still"));
+                $(this).attr("data-state","still");
+               }
             });
         });
-
-
-
 
     </script>
 
