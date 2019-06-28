@@ -85,7 +85,8 @@ $(document).ready(function () {
             let resObjResult = resObj.data;
             for (let i = 0; i < resObjResult.length; i++) {
                 console.log(resObjResult[i].images);
-                $("#Images").prepend($("<div>").append($("<p>").text("Rating:" + resObjResult[i].rating), $("<img>").attr({
+                $("#Images").prepend($("<div>").css({ float : "left","margin-right": "10px"}).append($("<p>").text("Rating:" + resObjResult[i].rating), 
+                  $("<img>").attr({
                     src: resObjResult[i].images.fixed_height_still.url,
                     class: "ImagesList",
                     height: '200px',
