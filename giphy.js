@@ -20,10 +20,30 @@ function createButtonsAppend(){
      const elementBtnAppend=topicsLower.pop();
      console.log("called Second");
      console.log(elementBtnAppend);
+     //copying the poped element into the array for handling duplicate buttons
+     topicsLower.push(elementBtnAppend);
     $("#buttonItems").append($("<button>").attr({
         id: elementBtnAppend, 
         class: "ButtonItemsList"
     }).text(elementBtnAppend));
+}
+
+//Function to Validate the input has the data in the Giphy API
+function validateApiData(elementVal){
+$.ajax({
+ url: queryURL + elementVal + apiKey,
+ method : "GET"
+}).then(function(resObj){
+  if(resObj.data.length){
+    console.log(resObj.data.length);
+    topicsLower.push(elementVal);
+    createButtonsAppend();
+  }
+  else {
+    console.log("Input does'nt have API Data : " + elementVal);
+    alert("Input does'nt have API Data : " + elementVal);
+  }
+});
 }
 
 $(document).ready(function () {
@@ -41,15 +61,14 @@ $(document).ready(function () {
                 alert("Duplicate button!!");
                 console.log(elementGif);
             }
-            else {
-                topicsLower.push(elementGif);
-                console.log(topicsLower);
+            else { 
+            // call validateApiData API call to validate and create Buttons
+               validateApiData(elementGif);
             }
         }
         else {
             alert("Input text Blank!!");
         }
-        createButtonsAppend();
         // Set Input text to blank after the button Creation
         $("#addGifs").val("");
     });
@@ -80,6 +99,7 @@ $(document).ready(function () {
         });
 
     });
+
     $(document).on('click', ".ImagesList", function (event) {
         event.preventDefault();
         console.log(event);
